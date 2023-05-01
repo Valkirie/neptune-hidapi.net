@@ -139,4 +139,31 @@ namespace neptune_hidapi.net.Hid
         public UInt16 period;
         public UInt16 count;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct SDCHapticPacket2
+    {
+        public byte packet_type; // = 0xea;
+        public byte len; // = 0xd;
+        public HapticPad position; // = HapticPad.Left;
+        public HapticStyle style; // = HapticStyle.Strong; //
+        public byte unsure2; // = 0x0;
+        public sbyte intensity; // = 0x00; // -7..5 => -2dB..10dB
+        public byte unsure3; // = 0x4;
+        public int tsA; // = 0; // timestamp?
+        public int tsB; // = 0;
+    }
+
+    public enum HapticPad : byte
+    {
+        Left,
+        Right
+    };
+
+    public enum HapticStyle : byte
+    {
+        Disabled = 0,
+        Weak = 1,
+        Strong = 2
+    };
 }

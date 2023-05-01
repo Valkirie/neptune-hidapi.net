@@ -75,6 +75,39 @@ namespace neptune_hidapi.net
             return arr;
         }
 
+        public async Task<bool> SetHaptic2(HapticPad position, HapticStyle style, sbyte intensity)
+        {
+            SDCHapticPacket2 haptic = new SDCHapticPacket2();
+
+            haptic.packet_type = 0xea;
+            haptic.len = 0xd;
+            haptic.position = position;
+            haptic.style = style;
+            haptic.unsure3 = 0x4;
+            haptic.intensity = intensity;
+
+            var ts = new Random().Next();
+            haptic.tsA = ts;
+            haptic.tsB = ts;
+
+            byte[] data = GetHapticDataBytes(haptic);
+
+            await _hidDevice.RequestFeatureReportAsync(data);
+
+            return true;
+        }
+
+        private byte[] GetHapticDataBytes(SDCHapticPacket2 packet)
+        {
+            int size = Marshal.SizeOf(packet);
+            byte[] arr = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(packet, ptr, false);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+            return arr;
+        }
+
         private async Task<bool> SetLizardMode(bool mouse, bool buttons)
         {
             try
